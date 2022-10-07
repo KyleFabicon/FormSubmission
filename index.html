@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Form submission</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+</head>
+  <body>
+    <div class="col-sm-6 col-sm-offset-3">
+      <form action="submit.php" method="POST">
+        
+        Name: <input type="text"id="name" name="name" placeholder="eg. John Doe">
+        <div id="nameError" style="display:none"><p style = "color:red">Please input a valid name.</p></div><br>
+
+        Email: <input type="text"id="email" name="email" placeholder="johndoe@gmail.com">
+        <div id="emailError" style="display: none"><p style = "color:red">Please input a valid email.</p></div><br>
+
+        Mobile Number: <input type="text" id="num" name="num" placeholder="eg. 09123456789"/>
+        <div id="numError" style="display: none"><p style = "color:red">Please input a valid phone number.</p></div><br>
+
+        Birthday: <input type="date"id="bday" name="bday" onChange="computeAge();">
+        <div id="bdayError" style="display: none"><p style = "color:red">Please input birthday.</p></div><br>
+
+        Age: <input type="text" id="age" name="age" placeholder="Input birthday" readonly>
+        <div id="ageError" style="display: none"><p style = "color:red">Please input birthday.</p></div><br>
+
+        Sex: <select id="sex" name="sex">
+          <option value="" disabled selected>Select sex</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option></select>
+        <div id="sexError" style="display: none"><p style = "color:red">Please select sex.</p></div><br>
+
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+    <script>
+      //client-side form validation
+        $("form").submit(function (e) {
+          var formData = {
+            name: $("#name").val(),
+            email: $("#email").val(),
+            num: $("#num").val(),
+            bday: $("#bday").val(),
+            age: $("#bday").val(),
+            sex: $("#bday").val()
+          };
+
+          $.ajax({
+            type: "POST",
+            url: "submit.php",
+            data: formData,
+            dataType: "json",
+            encode: true,
+          }).done(function (data) {
+            console.log(data);
+            if (!data.success) {
+              if (data.errors.name) {
+                document.getElementById("nameError").style.display = "block";
+              }
+              else{
+                document.getElementById("nameError").style.display = "none";
+              }
+
+              if (data.errors.email) {
+                document.getElementById("emailError").style.display = "block";
+              }
+              else{
+                document.getElementById("emailError").style.display = "none";
+              }
+
+              if (data.errors.num) {
+                document.getElementById("numError").style.display = "block";
+              }
+              else{
+                document.getElementById("numError").style.display = "none";
+              }
+
+              if (data.errors.bday) {
+                document.getElementById("bdayError").style.display = "block";
+              }
+              else{
+                document.getElementById("bdayError").style.display = "none";
+              }
+
+              if (data.errors.age) {
+                document.getElementById("ageError").style.display = "block";
+              }
+              else{
+                document.getElementById("ageError").style.display = "none";
+              }
+
+              if (data.errors.sex) {
+                document.getElementById("sexError").style.display = "block";
+              }
+              else{
+                document.getElementById("sexError").style.display = "none";
+              }
+            } else {
+              $("form").html(
+                '<div>' + data.message + "</div>"
+              );
+            }
+          });
+          e.preventDefault();
+        });
+
+        function computeAge() {
+            var today = new Date();
+            var birthDate = new Date(document.getElementById("bday").value);
+            var age = today.getFullYear() - birthDate.getFullYear();
+            var m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            document.getElementById("age").value = age;
+        }
+    </script>
+  </body>
+</html>
+
